@@ -5,10 +5,7 @@
 # I love to work on creative projects.
 # Hire me!
 # www.grimtech.net
-
-# DESCRIPTION
-# Plays sounds on your speakerz
-
+# xtoast@gmail.com
 
 # INCLUDES
 import os.path

@@ -1,4 +1,10 @@
 cs-radio.py
 ===========
 
-Uses left and right stereo channels independently to play Counter-Strike audio files, along with providing a method for externally triggering a Push-To-Talk button of a FRS radio. Indented for use on a Raspberry Pi connected to two FRS radios.
+For use in Airsoft games when automated transmission of audio files over FRS radios is desired.
+
+Allows two radios to be connected to one stereo output, using the left channel for radio 1, and right channel for radio 2. This allows one radio per team, ex: Radio 1 set to channel 3, Radio 2 set to channel 11.
+
+The program also provides a method for externally triggering the Push-To-Talk button of each FRS radio.
+
+Designed for use with Raspberry Pi.
