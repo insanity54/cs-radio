@@ -11,7 +11,6 @@
 import os.path
 import signal
 import sys
-import threading
 import pygame.mixer
 import pygame.time
 import pygame.event
@@ -46,13 +45,8 @@ def main():
     def start_game(start_sounds):
         "picks a random start sound and transmits it on all channels"
         from random import choice
-        transmit_all(choice(start_sounds))
-
-
-
-    #
-    # EXPERIMENTAL
-    #
+        play_sound('c', choice(start_sounds))
+        play_sound('t', choice(start_sounds))
 
     def next_sound(queue):
         "returns the sound_name of the next sound in queue"
@@ -61,30 +55,31 @@ def main():
             return queue.pop(0)
 
     def play_sound(team, queue):
-        C_CHANNEL = 0
-        T_CHANNEL = 1
-
-
-        if queue:
-            # if there is a sound in the queue
+        "plays the sound queue on the team channel"
+        if isinstance(queue, list):
+            # if queue is a list
             # play first sound in queue
             sound = pygame.mixer.Sound(file_path(next_sound(queue)))
 
+        elif isinstance(queue, str):
+            # queue is a string
+            sound = pygame.mixer.Sound(file_path(queue))
 
-            if team == 'c':
-                channel = pygame.mixer.Channel(C_CHANNEL)
-                #channel = sound.play()  # @todo problem, this overrides the above line
-                channel.play(sound)
-                channel.set_endevent(END_CSOUND_EVENT)
-                channel.set_volume(1, 0)
+        if team == 'c':
+            channel = pygame.mixer.Channel(C_CHANNEL)
+            channel.play(sound)
+            channel.set_endevent(END_CSOUND_EVENT)
+            channel.set_volume(1, 0)
 
-            elif team == 't':
-                channel = pygame.mixer.Channel(T_CHANNEL)
-                channel.play(sound)
-                channel.set_endevent(END_TSOUND_EVENT)
-                channel.set_volume(0, 1)
+        elif team == 't':
+            channel = pygame.mixer.Channel(T_CHANNEL)
+            channel.play(sound)
+            channel.set_endevent(END_TSOUND_EVENT)
+            channel.set_volume(0, 1)
 
-            return channel
+        return channel
+
+            
 
     def key_state(team, state):
         "keys or unkeys the radio PTT button for the specified team"
@@ -136,7 +131,8 @@ def main():
     END_TSOUND_EVENT = pygame.USEREVENT + 1
     PTT_C_EVENT = pygame.USEREVENT + 2
     PTT_T_EVENT = pygame.USEREVENT + 3
-
+    C_CHANNEL = 0
+    T_CHANNEL = 1
 
     signal.signal(signal.SIGINT, signal_handler) # call this if SIGINT (Ctrl+C)
     screen = pygame.display.set_mode((400, 300))
@@ -145,18 +141,28 @@ def main():
     ptt_c_timer = pygame.time.set_timer(PTT_C_EVENT, 0)  # create de-activated timer events
     ptt_t_timer = pygame.time.set_timer(PTT_T_EVENT, 0)
 
-    # Create a queue list
-    #c_queue = ['letsgo.wav', 'rescued.wav']
-    #t_queue = ['locknload.wav', 'escaped.wav']
+    c_channel = pygame.mixer.Channel(C_CHANNEL) # create channels to play sounds on
+    t_channel = pygame.mixer.Channel(T_CHANNEL)
 
-    # key the radios
-    
 
-    # play the first two sounds    
-    #c_channel = play_sound('c', c_queue)
-    #t_channel = play_sound('t', t_queue)
+    #c_queue = [] # uncomment for normal use, if not using tech demo
+    #t_queue = []
 
-    
+    #
+    # START TECH DEMO
+    #
+    c_queue = ['rescued.wav']     # for demonstration. delete or comment out for normal use
+    t_queue = ['escaped.wav']
+ 
+    # start game sounds. this could alternatively be bound to a key
+    # or button connected to GPIO
+    start_game(start_sounds)
+
+    #
+    # END TECH DEMO
+    #
+
+
     # Event loop
     running = 1
     while (running == 1):
@@ -241,7 +247,6 @@ def main():
                         # if there is a sound in queue
                         #print('there is a sound in c queue')
                         print(' c send sound')
-#                        c_channel = pygame.mixer.find_channel()
                         c_channel = play_sound('c', c_queue)
 
                     else:
