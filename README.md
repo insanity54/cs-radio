@@ -1,4 +1,5 @@
-cs-radio.py
+<<<<<<< HEAD
+cs-radio
 ===========
 
 For use in Airsoft games when automated transmission of audio files over FRS radios is desired.
